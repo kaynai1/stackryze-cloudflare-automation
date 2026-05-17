@@ -1,0 +1,98 @@
+╔═══════════════════════════════════════════════════════════════════╗
+║   Stackryze 域名自动注册并托管到 Cloudflare - 使用说明            ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+【功能介绍】
+这个工具可以帮您：
+1. 在 Stackryze (domain.stackryze.com) 注册免费域名
+2. 自动将域名添加到 Cloudflare 进行托管
+3. 自动配置 DNS 记录
+
+【使用前准备】
+
+1. 安装 Python
+   - 访问 https://www.python.org/downloads/
+   - 下载并安装 Python
+   - 安装时勾选 "Add Python to PATH"
+
+2. 准备账号信息
+   - GitHub 账号密码（用于登录 Stackryze）
+   - Cloudflare 邮箱和 API Key
+
+3. 获取 Cloudflare API Key
+   - 访问 https://dash.cloudflare.com/profile/api-tokens
+   - 点击 "Create Token"
+   - 选择 "Edit zone DNS" 模板
+   - 权限设置：Zone → DNS → Edit
+   - 创建并复制 Token
+
+【使用方法】
+
+方法一：双击运行（推荐）
+1. 双击 "点击运行.bat"
+2. 按提示输入信息
+3. 等待自动完成
+
+方法二：命令行运行
+1. 打开命令提示符
+2. 进入此目录
+3. 运行：python 一键注册.py
+
+【需要输入的信息】
+
+1. GitHub 邮箱（Stackryze 登录用）
+2. GitHub 密码（Stackryze 登录用）
+3. 域名前缀（如 myapp、blog、api）
+4. Cloudflare 邮箱
+5. Cloudflare API Key
+
+【运行结果】
+
+成功后您将获得：
+- 免费域名：您的前缀.indevs.in
+- 域名已托管到 Cloudflare
+- DNS 记录已配置
+- SSL 证书已启用
+
+【后续步骤】
+
+1. 登录 Stackryze: https://domain.stackryze.com
+2. 进入 My Domains → 找到您的域名
+3. 点击 Manage → DNS Configuration
+4. 将 NS 记录改为：
+   - ns1.cloudflare.com
+   - ns2.cloudflare.com
+
+5. 登录 Cloudflare: https://dash.cloudflare.com
+6. 可以看到新添加的域名
+7. 等待几分钟 DNS 生效
+8. 访问 https://您的域名.indevs.in
+
+【常见问题】
+
+Q: 提示 "域名已被注册" 怎么办？
+A: 换一个域名前缀重试，如 myapp2、myproject
+
+Q: 登录失败怎么办？
+A: 检查 GitHub 邮箱和密码是否正确
+
+Q: Cloudflare 添加失败怎么办？
+A: 检查 API Key 权限，确保有 "Edit zone DNS" 权限
+
+Q: 如何查看详细日志？
+A: 运行时会生成截图文件，可以查看操作过程
+
+【文件说明】
+
+一键注册.py          - 主程序
+点击运行.bat         - Windows 一键运行
+使用说明.txt         - 本文件
+requirements.txt     - Python 依赖
+
+【技术支持】
+
+如有问题，请检查：
+1. Python 是否正确安装
+2. 网络连接是否正常
+3. 账号密码是否正确
+4. API Key 权限是否足够
