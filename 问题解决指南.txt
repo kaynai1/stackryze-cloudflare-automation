@@ -1,0 +1,82 @@
+╔═══════════════════════════════════════════════════════════════════╗
+║   问题解决指南                                                     ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+【问题描述】
+运行脚本后自动退出，没有显示任何内容
+
+【解决步骤】
+
+第一步：运行快速诊断
+1. 双击 "快速诊断.bat"
+2. 查看诊断结果
+3. 根据提示修复问题
+
+第二步：修复环境
+如果诊断发现问题，双击 "修复环境.bat" 自动修复
+
+第三步：手动修复（如果自动修复失败）
+
+1. 安装 Python
+   - 访问 https://www.python.org/downloads/
+   - 下载 Python 3.10 或更高版本
+   - 安装时勾选 "Add Python to PATH"
+   - 安装完成后重启电脑
+
+2. 安装依赖包
+   打开命令提示符，运行：
+   pip install playwright requests
+
+3. 安装 Playwright 浏览器
+   运行：
+   playwright install chromium
+
+4. 测试环境
+   运行：
+   python 测试环境.py
+
+【常见错误及解决方法】
+
+错误 1："python 不是内部或外部命令"
+解决：重新安装 Python，勾选 "Add Python to PATH"
+
+错误 2："No module named 'playwright'"
+解决：pip install playwright
+
+错误 3："playwright install chromium" 失败
+解决：以管理员身份运行命令提示符
+
+错误 4："连接超时"
+解决：检查网络连接，确保能访问 https://domain.stackryze.com
+
+【快速修复命令】
+
+如果以上方法都不行，运行以下命令：
+
+1. 升级 pip：
+   python -m pip install --upgrade pip
+
+2. 安装所有依赖：
+   pip install playwright requests
+
+3. 安装浏览器：
+   playwright install chromium
+
+4. 测试：
+   python 测试环境.py
+
+【文件说明】
+
+快速诊断.bat     - 快速诊断工具
+修复环境.bat     - 自动修复环境
+测试环境.py      - 环境测试脚本
+一键注册.py      - 主程序
+点击运行.bat     - 一键运行
+
+【联系支持】
+
+如果问题仍然存在，请提供：
+1. 快速诊断的结果截图
+2. 运行 "python --version" 的输出
+3. 运行 "pip list" 的输出
+4. 完整的错误信息

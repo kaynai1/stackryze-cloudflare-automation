@@ -1,0 +1,145 @@
+╔═══════════════════════════════════════════════════════════════════╗
+║   Outlook 邮箱自动注册说明                                         ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+【功能介绍】
+
+现在支持三种注册方式：
+
+1. 单独注册 Outlook 邮箱
+   - 文件：注册Outlook邮箱.py / 注册Outlook邮箱.bat
+   - 功能：自动创建 Outlook/Hotmail 邮箱账号
+
+2. 全自动注册流程
+   - 文件：全自动注册.py / 全自动注册.bat
+   - 功能：自动完成所有步骤
+     * 自动注册 Outlook 邮箱
+     * 用 Outlook 邮箱注册 Stackryze
+     * 注册免费域名
+     * 托管到 Cloudflare
+
+3. 使用已有账号注册
+   - 文件：一键注册.py / 点击运行.bat
+   - 功能：使用已有 GitHub 账号注册
+
+【使用方法】
+
+方法一：单独注册 Outlook 邮箱
+
+1. 双击 "注册Outlook邮箱.bat"
+2. 选择注册方式（随机/自定义）
+3. 完成人机验证
+4. 获得 Outlook 邮箱账号
+
+方法二：全自动注册（推荐）
+
+1. 双击 "全自动注册.bat"
+2. 输入 Cloudflare 信息
+3. 输入域名前缀
+4. 等待自动完成
+
+【全自动注册流程】
+
+步骤 1: 自动注册 Outlook 邮箱
+- 自动生成随机邮箱地址
+- 自动填写注册信息
+- 需要手动完成人机验证
+
+步骤 2: 用 Outlook 邮箱注册 Stackryze
+- 自动登录 Stackryze
+- 自动注册域名
+
+步骤 3: 添加到 Cloudflare
+- 自动添加域名
+- 自动配置 DNS 记录
+
+步骤 4: 完成
+- 显示所有账号信息
+- 保存到文件
+
+【需要准备的信息】
+
+Cloudflare 信息：
+- Cloudflare 邮箱
+- Cloudflare API Key
+
+域名配置：
+- 想要的域名前缀（如 myapp）
+- 服务器 IP（可选）
+
+【注意事项】
+
+1. 人机验证
+   - Outlook 注册需要手动完成人机验证
+   - 请在浏览器中完成验证后按 Enter
+
+2. 网络要求
+   - 需要能访问 https://signup.live.com
+   - 需要能访问 https://domain.stackryze.com
+   - 需要能访问 https://api.cloudflare.com
+
+3. 账号限制
+   - Stackryze 每个账号最多 6 个域名
+   - Outlook 注册可能有频率限制
+
+【生成的文件】
+
+outlook_accounts.txt
+- 保存所有 Outlook 账号信息
+
+full_registration_info.json
+- 保存完整的注册信息
+
+outlook_registration_*.png
+- Outlook 注册截图
+
+stackryze_success.png
+- Stackryze 注册截图
+
+【常见问题】
+
+Q: Outlook 注册失败怎么办？
+A: 
+1. 检查网络连接
+2. 尝试使用 VPN
+3. 换一个邮箱前缀重试
+
+Q: 人机验证太难怎么办？
+A: 
+1. 使用非无头模式（默认）
+2. 在浏览器中手动完成验证
+3. 可以多次尝试
+
+Q: Stackryze 注册失败怎么办？
+A:
+1. 检查 Outlook 邮箱是否有效
+2. 检查域名是否已被注册
+3. 换一个域名前缀重试
+
+Q: Cloudflare 添加失败怎么办？
+A:
+1. 检查 API Key 权限
+2. 确保域名未被其他账户添加
+3. 检查网络连接
+
+【高级用法】
+
+自定义 Outlook 邮箱前缀：
+运行 "注册Outlook邮箱.py" 时选择 "自定义邮箱前缀"
+
+批量注册：
+多次运行 "全自动注册.py"，使用不同的域名前缀
+
+手动配置：
+如果自动配置失败，可以手动登录 Cloudflare 配置 DNS
+
+【文件说明】
+
+注册Outlook邮箱.py      - Outlook 邮箱注册脚本
+注册Outlook邮箱.bat     - Outlook 注册运行文件
+全自动注册.py           - 全自动注册脚本
+全自动注册.bat          - 全自动注册运行文件
+一键注册.py             - 使用已有账号注册
+点击运行.bat            - 一键运行文件
+快速诊断.bat            - 环境诊断工具
+修复环境.bat            - 环境修复工具
