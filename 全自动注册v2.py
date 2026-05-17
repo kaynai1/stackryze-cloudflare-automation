@@ -485,8 +485,17 @@ async def main():
 ╚═══════════════════════════════════════════════════════════════════╝
     """)
     
+    # 选择模式
+    print("请选择注册模式：")
+    print("1. 全自动注册（自动注册 Outlook 邮箱）")
+    print("2. 使用已有 Outlook 邮箱")
+    print("3. 使用 GitHub 账号")
+    print("4. 手动登录（跳过自动注册）")
+    
+    choice = input("\n请选择 (1/2/3/4): ").strip()
+    
     # 获取 Cloudflare 信息
-    print("请提供 Cloudflare 信息：")
+    print("\n请提供 Cloudflare 信息：")
     cf_email = input("Cloudflare 邮箱: ").strip()
     cf_api_key = input("Cloudflare API Key: ").strip()
     
@@ -499,32 +508,106 @@ async def main():
     if not server_ip:
         server_ip = '192.168.1.1'
     
-    # 确认信息
-    print(f"\n{'='*60}")
-    print("配置信息：")
-    print(f"{'='*60}")
-    print(f"Cloudflare 邮箱: {cf_email}")
-    print(f"域名: {domain_prefix}.indevs.in")
-    print(f"服务器 IP: {server_ip}")
-    print(f"{'='*60}")
-    
-    confirm = input("\n确认开始全自动注册？(y/n): ").strip().lower()
-    if confirm != 'y':
-        print("已取消")
+    if choice == '1':
+        # 全自动注册模式
+        print(f"\n{'='*60}")
+        print("全自动注册模式")
+        print(f"{'='*60}")
+        print(f"Cloudflare 邮箱: {cf_email}")
+        print(f"域名: {domain_prefix}.indevs.in")
+        print(f"服务器 IP: {server_ip}")
+        print(f"{'='*60}")
+        
+        confirm = input("\n确认开始全自动注册？(y/n): ").strip().lower()
+        if confirm != 'y':
+            print("已取消")
+            return
+        
+        # 步骤 1: 注册 Outlook 邮箱
+        outlook_account = await register_outlook_email()
+        if not outlook_account:
+            print("\n❌ Outlook 邮箱注册失败，流程终止")
+            return
+        
+        # 步骤 2: 注册 Stackryze 域名
+        domain_name = await register_stackryze(
+            outlook_account['email'],
+            outlook_account['password'],
+            domain_prefix
+        )
+        
+    elif choice == '2':
+        # 使用已有 Outlook 邮箱
+        print(f"\n{'='*60}")
+        print("使用已有 Outlook 邮箱模式")
+        print(f"{'='*60}")
+        
+        outlook_email = input("Outlook 邮箱: ").strip()
+        outlook_password = input("Outlook 密码: ").strip()
+        
+        print(f"\n配置信息：")
+        print(f"Outlook 邮箱: {outlook_email}")
+        print(f"域名: {domain_prefix}.indevs.in")
+        print(f"Cloudflare 邮箱: {cf_email}")
+        print(f"服务器 IP: {server_ip}")
+        
+        confirm = input("\n确认开始注册？(y/n): ").strip().lower()
+        if confirm != 'y':
+            print("已取消")
+            return
+        
+        # 注册 Stackryze 域名
+        domain_name = await register_stackryze(outlook_email, outlook_password, domain_prefix)
+        
+    elif choice == '3':
+        # 使用 GitHub 账号
+        print(f"\n{'='*60}")
+        print("使用 GitHub 账号模式")
+        print(f"{'='*60}")
+        
+        github_email = input("GitHub 邮箱: ").strip()
+        github_password = input("GitHub 密码: ").strip()
+        
+        print(f"\n配置信息：")
+        print(f"GitHub 账号: {github_email}")
+        print(f"域名: {domain_prefix}.indevs.in")
+        print(f"Cloudflare 邮箱: {cf_email}")
+        print(f"服务器 IP: {server_ip}")
+        
+        confirm = input("\n确认开始注册？(y/n): ").strip().lower()
+        if confirm != 'y':
+            print("已取消")
+            return
+        
+        # 使用 GitHub 登录 Stackryze
+        domain_name = await register_stackryze_with_github(github_email, github_password, domain_prefix)
+        
+    elif choice == '4':
+        # 手动登录模式
+        print(f"\n{'='*60}")
+        print("手动登录模式")
+        print(f"{'='*60}")
+        print("请手动在浏览器中登录 Stackryze 并注册域名")
+        print("完成后输入域名信息")
+        
+        domain_name = input(f"\n请输入您注册的域名 (如 {domain_prefix}.indevs.in): ").strip()
+        if not domain_name.endswith('.indevs.in'):
+            domain_name = f"{domain_name}.indevs.in"
+        
+        print(f"\n配置信息：")
+        print(f"域名: {domain_name}")
+        print(f"Cloudflare 邮箱: {cf_email}")
+        print(f"服务器 IP: {server_ip}")
+        
+        confirm = input("\n确认添加到 Cloudflare？(y/n): ").strip().lower()
+        if confirm != 'y':
+            print("已取消")
+            return
+        
+    else:
+        print("无效选择")
         return
     
-    # 步骤 1: 注册 Outlook 邮箱
-    outlook_account = await register_outlook_email()
-    if not outlook_account:
-        print("\n❌ Outlook 邮箱注册失败，流程终止")
-        return
-    
-    # 步骤 2: 注册 Stackryze 域名
-    domain_name = await register_stackryze(
-        outlook_account['email'],
-        outlook_account['password'],
-        domain_prefix
-    )
     if not domain_name:
         print("\n❌ Stackryze 域名注册失败，流程终止")
         return
@@ -542,10 +625,14 @@ async def main():
     print(f"\n{'='*60}")
     print("🎉 全自动注册完成！")
     print(f"{'='*60}")
-    print(f"""
+    
+    if choice == '1':
+        print(f"""
 Outlook 邮箱: {outlook_account['email']}
 Outlook 密码: {outlook_account['password']}
-
+        """)
+    
+    print(f"""
 Stackryze 域名: {domain_name}
 
 Cloudflare Zone ID: {zone_id}
@@ -557,12 +644,11 @@ Cloudflare Zone ID: {zone_id}
    - ns2.cloudflare.com
 3. 等待 DNS 生效
 4. 访问 https://{domain_name}
-""")
+    """)
     
     # 保存所有信息
     with open('full_registration_info.json', 'w', encoding='utf-8') as f:
-        json.dump({
-            'outlook': outlook_account,
+        data = {
             'domain': domain_name,
             'cloudflare': {
                 'zone_id': zone_id,
@@ -570,7 +656,12 @@ Cloudflare Zone ID: {zone_id}
             },
             'server_ip': server_ip,
             'created_at': datetime.now().isoformat()
-        }, f, indent=2, ensure_ascii=False)
+        }
+        
+        if choice == '1':
+            data['outlook'] = outlook_account
+        
+        json.dump(data, f, indent=2, ensure_ascii=False)
     
     print("所有信息已保存到: full_registration_info.json")
 
