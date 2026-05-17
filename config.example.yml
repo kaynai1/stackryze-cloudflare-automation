@@ -1,0 +1,70 @@
+# Stackryze to Cloudflare 自动化配置
+
+stackryze:
+  # 登录凭证（建议使用环境变量）
+  email: "${STACKRYZE_EMAIL}"
+  password: "${STACKRYZE_PASSWORD}"
+  
+  # 域名配置
+  domain_suffix: "indevs.in"  # 可选: indevs.in, sryze.cc
+  domain_prefix: "myapp"      # 域名前缀，如 myapp.indevs.in
+  
+  # 浏览器配置
+  headless: true  # 无头模式运行
+  timeout: 30000  # 超时时间（毫秒）
+
+cloudflare:
+  # 认证配置（建议使用环境变量）
+  email: "${CLOUDFLARE_EMAIL}"
+  api_key: "${CLOUDFLARE_API_KEY}"
+  # 或者使用 API Token（推荐）
+  api_token: "${CLOUDFLARE_API_TOKEN}"
+  
+  # 域名配置
+  zone_name: "myapp.indevs.in"
+  account_id: ""  # 可选，自动检测
+  
+  # DNS 记录配置
+  dns_records:
+    - type: "A"
+      name: "@"  # 根域名
+      content: "192.168.1.1"  # 替换为你的服务器 IP
+      ttl: 1  # 自动
+      proxied: true  # 启用 Cloudflare 代理
+    
+    - type: "CNAME"
+      name: "www"
+      content: "myapp.indevs.in"
+      ttl: 1
+      proxied: true
+  
+  # SSL/TLS 配置
+  ssl_mode: "full"  # flexible, full, strict
+  
+  # 其他设置
+  always_use_https: true
+  automatic_https_rewrites: true
+
+# 通知配置（可选）
+notifications:
+  # Slack 通知
+  slack:
+    enabled: false
+    webhook_url: "${SLACK_WEBHOOK_URL}"
+    channel: "#domain-notifications"
+  
+  # 邮件通知
+  email:
+    enabled: false
+    smtp_host: "smtp.gmail.com"
+    smtp_port: 587
+    sender_email: "${NOTIFICATION_EMAIL}"
+    sender_password: "${NOTIFICATION_PASSWORD}"
+    receiver_email: "admin@example.com"
+
+# 日志配置
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  file: "automation.log"
+  max_size: 10  # MB
+  backup_count: 5
