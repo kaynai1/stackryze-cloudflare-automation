@@ -1,38 +1,33 @@
-name: Auto Register Stackryze Domain to Cloudflare
+name: 一键注册 Stackryze 域名并托管到 Cloudflare
 
 on:
-  # 手动触发
   workflow_dispatch:
     inputs:
+      github_email:
+        description: 'GitHub 邮箱（Stackryze 登录用）'
+        required: true
+      github_password:
+        description: 'GitHub 密码（Stackryze 登录用）'
+        required: true
       domain_prefix:
-        description: '域名前缀 (如: myapp)'
+        description: '域名前缀（如 myapp）'
         required: true
-        default: 'myapp'
-      domain_suffix:
-        description: '域名后缀'
+      cf_email:
+        description: 'Cloudflare 邮箱'
         required: true
-        default: 'indevs.in'
-        type: choice
-        options:
-          - indevs.in
-          - sryze.cc
-  
-  # 定时触发（每天 UTC 00:00）
-  schedule:
-    - cron: '0 0 * * *'
-  
-  # 推送触发（可选）
-  push:
-    branches: [ main ]
-    paths:
-      - 'config.yml'
-      - 'scripts/**'
+      cf_api_key:
+        description: 'Cloudflare API Key'
+        required: true
+      server_ip:
+        description: '服务器 IP（可选，默认 192.168.1.1）'
+        required: false
+        default: '192.168.1.1'
 
 env:
   PYTHON_VERSION: '3.11'
 
 jobs:
-  register-domain:
+  register-and-configure:
     runs-on: ubuntu-latest
     
     steps:
@@ -52,70 +47,54 @@ jobs:
         playwright install chromium
         playwright install-deps chromium
     
-    - name: Create config from secrets
+    - name: 运行自动化脚本
       run: |
-        cat > config.yml << EOF
-        stackryze:
-          email: "${{ secrets.STACKRYZE_EMAIL }}"
-          password: "${{ secrets.STACKRYZE_PASSWORD }}"
-          domain_suffix: "${{ github.event.inputs.domain_suffix || 'indevs.in' }}"
-          domain_prefix: "${{ github.event.inputs.domain_prefix || 'myapp' }}"
-          headless: true
-          timeout: 30000
-        
-        cloudflare:
-          email: "${{ secrets.CLOUDFLARE_EMAIL }}"
-          api_key: "${{ secrets.CLOUDFLARE_API_KEY }}"
-          api_token: "${{ secrets.CLOUDFLARE_API_TOKEN }}"
-          zone_name: "${{ github.event.inputs.domain_prefix || 'myapp' }}.${{ github.event.inputs.domain_suffix || 'indevs.in' }}"
-          dns_records:
-            - type: "A"
-              name: "@"
-              content: "192.168.1.1"
-              ttl: 1
-              proxied: true
-            - type: "CNAME"
-              name: "www"
-              content: "${{ github.event.inputs.domain_prefix || 'myapp' }}.${{ github.event.inputs.domain_suffix || 'indevs.in' }}"
-              ttl: 1
-              proxied: true
-          ssl_mode: "full"
-          always_use_https: true
-        
-        logging:
-          level: "INFO"
-          file: "automation.log"
+        python auto_register.py << EOF
+        ${{ github.event.inputs.github_email }}
+        ${{ github.event.inputs.github_password }}
+        ${{ github.event.inputs.domain_prefix }}
+        ${{ github.event.inputs.cf_email }}
+        ${{ github.event.inputs.cf_api_key }}
+        ${{ github.event.inputs.server_ip }}
         EOF
+      env:
+        GITHUB_EMAIL: ${{ github.event.inputs.github_email }}
+        GITHUB_PASSWORD: ${{ github.event.inputs.github_password }}
+        DOMAIN_PREFIX: ${{ github.event.inputs.domain_prefix }}
+        CF_EMAIL: ${{ github.event.inputs.cf_email }}
+        CF_API_KEY: ${{ github.event.inputs.cf_api_key }}
+        SERVER_IP: ${{ github.event.inputs.server_ip }}
     
-    - name: Register Stackryze domain
-      id: register
-      run: |
-        python scripts/register_stackryze.py
-        echo "domain_name=${{ github.event.inputs.domain_prefix || 'myapp' }}.${{ github.event.inputs.domain_suffix || 'indevs.in' }}" >> $GITHUB_OUTPUT
-    
-    - name: Add domain to Cloudflare
-      run: |
-        python scripts/add_to_cloudflare.py
-    
-    - name: Configure DNS records
-      run: |
-        python scripts/setup_dns.py
-    
-    - name: Upload logs
+    - name: 上传截图和日志
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: automation-logs
+        name: automation-results
         path: |
-          automation.log
-          *.png  # 截图（如果有）
+          *.png
+          *.json
+          *.log
     
-    - name: Send notification
-      if: failure()
-      run: |
-        echo "::error::Domain registration failed. Check the logs for details."
-    
-    - name: Success notification
+    - name: 显示结果
       if: success()
       run: |
-        echo "::notice::Domain ${{ steps.register.outputs.domain_name }} successfully registered and configured!"
+        echo "🎉 自动化完成！"
+        echo ""
+        echo "您的域名: ${{ github.event.inputs.domain_prefix }}.indevs.in"
+        echo ""
+        echo "请等待几分钟让 DNS 生效，然后访问："
+        echo "https://${{ github.event.inputs.domain_prefix }}.indevs.in"
+        echo ""
+        echo "登录 Cloudflare 查看域名："
+        echo "https://dash.cloudflare.com"
+    
+    - name: 显示失败信息
+      if: failure()
+      run: |
+        echo "❌ 自动化失败，请检查日志"
+        echo ""
+        echo "可能的原因："
+        echo "1. GitHub 账号密码错误"
+        echo "2. 域名已被注册"
+        echo "3. Cloudflare API Key 无效"
+        echo "4. 网络连接问题"
