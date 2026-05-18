@@ -21,10 +21,10 @@ def check_python():
     # 检查版本
     version = sys.version_info
     if version.major >= 3 and version.minor >= 8:
-        print("✅ Python 版本符合要求")
+        print("[OK] Python 版本符合要求")
         return True
     else:
-        print("❌ Python 版本过低，需要 3.8 或更高版本")
+        print("[ERROR] Python 版本过低，需要 3.8 或更高版本")
         return False
 
 def check_pip():
@@ -33,10 +33,10 @@ def check_pip():
     try:
         import pip
         print(f"pip 版本: {pip.__version__}")
-        print("✅ pip 已安装")
+        print("[OK] pip 已安装")
         return True
     except ImportError:
-        print("❌ pip 未安装")
+        print("[ERROR] pip 未安装")
         return False
 
 def check_packages():
@@ -53,9 +53,9 @@ def check_packages():
         try:
             module = __import__(package)
             version = getattr(module, '__version__', '未知')
-            print(f"✅ {name}: {version}")
+            print(f"[OK] {name}: {version}")
         except ImportError:
-            print(f"❌ {name}: 未安装")
+            print(f"[ERROR] {name}: 未安装")
             all_ok = False
     
     return all_ok
@@ -66,17 +66,17 @@ def check_playwright_browser():
     
     try:
         from playwright.sync_api import sync_playwright
-        print("✅ Playwright 模块已导入")
+        print("[OK] Playwright 模块已导入")
         
         # 尝试启动浏览器
         print("正在测试浏览器启动...")
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
             browser.close()
-            print("✅ 浏览器启动成功")
+            print("[OK] 浏览器启动成功")
             return True
     except Exception as e:
-        print(f"❌ 浏览器启动失败: {e}")
+        print(f"[ERROR] 浏览器启动失败: {e}")
         return False
 
 def check_network():
@@ -94,9 +94,9 @@ def check_network():
         try:
             import requests
             response = requests.get(url, timeout=10)
-            print(f"✅ {name}: 连接正常 (状态码 {response.status_code})")
+            print(f"[OK] {name}: 连接正常 (状态码 {response.status_code})")
         except Exception as e:
-            print(f"❌ {name}: 连接失败 ({e})")
+            print(f"[ERROR] {name}: 连接失败 ({e})")
             all_ok = False
     
     return all_ok
@@ -111,10 +111,10 @@ def check_permissions():
         with open(test_file, 'w') as f:
             f.write("test")
         os.remove(test_file)
-        print("✅ 当前目录可写")
+        print("[OK] 当前目录可写")
         return True
     except Exception as e:
-        print(f"❌ 当前目录不可写: {e}")
+        print(f"[ERROR] 当前目录不可写: {e}")
         return False
 
 def provide_solutions(results):
@@ -122,7 +122,7 @@ def provide_solutions(results):
     print_header("诊断结果和解决方案")
     
     if all(results.values()):
-        print("🎉 所有检查通过！环境配置正确。")
+        print("[SUCCESS] 所有检查通过！环境配置正确。")
         print("\n现在可以运行以下命令：")
         print("  - 双击 '点击运行.bat'")
         print("  - 或运行 'python 一键注册.py'")
